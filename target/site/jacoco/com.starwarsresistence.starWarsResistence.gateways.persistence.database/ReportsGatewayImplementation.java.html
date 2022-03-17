@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReportsGatewayImplementation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">starWarsResistence</a> &gt; <a href="index.source.html" class="el_package">com.starwarsresistence.starWarsResistence.gateways.persistence.database</a> &gt; <span class="el_source">ReportsGatewayImplementation.java</span></div><h1>ReportsGatewayImplementation.java</h1><pre class="source lang-java linenums">package com.starwarsresistence.starWarsResistence.gateways.persistence.database;
+
+import com.starwarsresistence.starWarsResistence.domains.Rebel;
+import com.starwarsresistence.starWarsResistence.enums.ItemsEnum;
+import com.starwarsresistence.starWarsResistence.gateways.controllers.responses.BagResponse;
+import com.starwarsresistence.starWarsResistence.gateways.controllers.responses.MessageResponseDTO;
+import com.starwarsresistence.starWarsResistence.gateways.persistence.ReportsGateway;
+import com.starwarsresistence.starWarsResistence.gateways.persistence.database.repository.DataBasePersistenceRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
+<span class="fc" id="L16">@AllArgsConstructor</span>
+public class ReportsGatewayImplementation implements ReportsGateway {
+
+    DataBasePersistenceRepository persistenceRepository;
+
+    @Override
+    public MessageResponseDTO traitorPercentageReport() {
+<span class="nc" id="L23">        List&lt;Rebel&gt; allRebels = persistenceRepository.findAll();</span>
+<span class="nc" id="L24">        List&lt;Rebel&gt; allTraitors = allRebels.stream()</span>
+<span class="nc" id="L25">                .filter(rebel -&gt; rebel.isATraitor())</span>
+<span class="nc" id="L26">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L28">        float numberOfTraitors = allTraitors.size();</span>
+<span class="nc" id="L29">        float numberOfRebels = allRebels.size();</span>
+<span class="nc" id="L30">        float traitorsPercentage = (numberOfTraitors / numberOfRebels) * 100;</span>
+<span class="nc" id="L31">        float rebelsPercentage = 100 - traitorsPercentage;</span>
+
+<span class="nc" id="L33">        return new MessageResponseDTO(&quot;Porcentagem de Traidores: &quot; + traitorsPercentage + &quot;%&quot; +</span>
+                &quot;. Porcentagem de rebeldes: &quot; + rebelsPercentage + &quot;%.&quot;);
+    }
+
+    @Override
+    public MessageResponseDTO itemsAverageReport() {
+
+<span class="nc" id="L40">        List&lt;Rebel&gt; allRebels = persistenceRepository.findAll().stream()</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">                .filter(rebel -&gt; !rebel.isATraitor())</span>
+<span class="nc" id="L42">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L44">        BagResponse bag = countAllItemsOfARebelList(allRebels);</span>
+
+<span class="nc" id="L46">        float weaponAverage = bag.getWeapons() / (float) (allRebels.size());</span>
+<span class="nc" id="L47">        float ammunitionAverage = bag.getAmmunition() / (float) (allRebels.size());</span>
+<span class="nc" id="L48">        float waterAverage = bag.getWater() / (float) (allRebels.size());</span>
+<span class="nc" id="L49">        float foodAverage = bag.getFood() / (float) (allRebels.size());</span>
+
+<span class="nc" id="L51">        return new MessageResponseDTO(&quot;Média de armas por rebelde &quot; + weaponAverage</span>
+                + &quot;. Média de munição por rebelde &quot; + ammunitionAverage
+                + &quot;. Média de água por rebelde &quot; + waterAverage
+                + &quot;. Média de comida por rebelde &quot; + foodAverage
+        );
+    }
+
+    @Override
+    public MessageResponseDTO lostPointsReport() {
+
+<span class="nc" id="L61">        List&lt;Rebel&gt; allTraitors = persistenceRepository.findAll().stream()</span>
+<span class="nc" id="L62">                .filter(rebel -&gt; rebel.isATraitor())</span>
+<span class="nc" id="L63">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L65">        BagResponse bag = countAllItemsOfARebelList(allTraitors);</span>
+<span class="nc" id="L66">        return new MessageResponseDTO(&quot;Pontos perdidos devido a traidores: &quot; + countBagPoints(bag));</span>
+    }
+
+    private int countBagPoints(BagResponse bag) {
+<span class="nc" id="L70">        return bag.getWeapons() * ItemsEnum.WEAPON.getItemPoints()</span>
+<span class="nc" id="L71">                + bag.getAmmunition() * ItemsEnum.AMMUNITION.getItemPoints()</span>
+<span class="nc" id="L72">                + bag.getWater() * ItemsEnum.WATER.getItemPoints()</span>
+<span class="nc" id="L73">                + bag.getFood() * ItemsEnum.FOOD.getItemPoints();</span>
+
+    }
+
+    private BagResponse countAllItemsOfARebelList(List&lt;Rebel&gt; list) {
+
+<span class="nc" id="L79">        BagResponse bag = new BagResponse();</span>
+
+<span class="nc" id="L81">        list.forEach(rebel -&gt; {</span>
+<span class="nc" id="L82">            bag.setWeapons(bag.getWeapons() + rebel.getBag().getWeapons());</span>
+<span class="nc" id="L83">            bag.setAmmunition(bag.getAmmunition() + rebel.getBag().getAmmunition());</span>
+<span class="nc" id="L84">            bag.setWater(bag.getWater() + rebel.getBag().getWater());</span>
+<span class="nc" id="L85">            bag.setFood(bag.getFood() + rebel.getBag().getFood());</span>
+<span class="nc" id="L86">        });</span>
+<span class="nc" id="L87">        return bag;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>

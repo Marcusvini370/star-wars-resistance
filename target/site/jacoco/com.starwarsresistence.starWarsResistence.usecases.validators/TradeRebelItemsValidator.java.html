@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TradeRebelItemsValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">starWarsResistence</a> &gt; <a href="index.source.html" class="el_package">com.starwarsresistence.starWarsResistence.usecases.validators</a> &gt; <span class="el_source">TradeRebelItemsValidator.java</span></div><h1>TradeRebelItemsValidator.java</h1><pre class="source lang-java linenums">package com.starwarsresistence.starWarsResistence.usecases.validators;
+
+import com.starwarsresistence.starWarsResistence.domains.itemTrade.RebelTradeData;
+import com.starwarsresistence.starWarsResistence.domains.itemTrade.Trade;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Component
+<span class="fc" id="L12">public class TradeRebelItemsValidator {</span>
+
+    public List&lt;String&gt; validate(Trade trade) {
+<span class="fc" id="L15">        List&lt;String&gt; errorList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L17">        RebelTradeData rebel1 = trade.getRebelTradeData1();</span>
+<span class="fc" id="L18">        RebelTradeData rebel2 = trade.getRebelTradeData2();</span>
+
+<span class="pc bpc" id="L20" title="3 of 4 branches missed.">        if (trade.getRebelTradeData1().getRebelId() == null || trade.getRebelTradeData2().getRebelId() == null) {</span>
+<span class="fc" id="L21">            errorList.add(&quot;Id não informado&quot;);</span>
+        }
+
+<span class="pc bpc" id="L24" title="3 of 4 branches missed.">        if (CollectionUtils.isEmpty(rebel1.getRebelTradeBag()) || CollectionUtils.isEmpty(rebel2.getRebelTradeBag())) {</span>
+<span class="fc" id="L25">            errorList.add(&quot;Items da troca não informados&quot;);</span>
+        }
+<span class="fc" id="L27">        return errorList;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.2.201808211720</span></div></body></html>
