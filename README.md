@@ -24,6 +24,12 @@ mvn spring-boot:run
 http://localhost:8080/starwarsresistence
 ```
 
+### Documentação da API no Swagger
+
+```
+http://localhost:8080/swagger-ui.html
+```
+
 <h1>Teste dos métodos com Postman</h1>
 <p><b>Save</b><p>
 
